@@ -3,7 +3,7 @@ package greeting_test
 import (
 	"testing"
 
-	"github.com/friendly-fhir/go-template/internal/greeting"
+	"github.com/bitwizeshift/github-step-summarizer/internal/greeting"
 	"github.com/google/go-cmp/cmp"
 )
 

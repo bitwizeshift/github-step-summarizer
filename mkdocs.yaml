@@ -1,13 +1,13 @@
 # yaml-language-server: $schema=https://json.schemastore.org/mkdocs-1.0.json
-site_name: Go Template
-copyright: Friendly FHIR Contributors 2024
-repo_name: go-template
-repo_url: https://github.com/friendly-fhir/go-template
+site_name: GitHub Step Summarizer
+copyright: Matthew Rodusek 2024
+repo_name: github-step-summarizer
+repo_url: https://github.com/bitwizeshift/github-step-summarizer
 remote_branch: origin/master
 remote_name: origin
 site_author: Matthew Rodusek
-site_description: The Friendly FHIR organization
-site_url: https://friendly-fhir.github.io/go-template
+site_description: A utility that can produce easy summarizer templates for GitHub Actions
+site_url: https://bitwizeshift.github.io/github-step-summarizer
 site_dir: dist
 docs_dir: docs
 

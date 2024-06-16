@@ -1,4 +1,4 @@
-module github.com/friendly-fhir/go-template
+module github.com/bitwizeshift/github-step-summarizer
 
 go 1.22.3
 

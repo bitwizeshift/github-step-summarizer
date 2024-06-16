@@ -28,12 +28,29 @@ jobs:
     secrets: inherit
 
   promote:
-    name: Promote to Master
     needs: presubmit
-    uses: friendly-fhir/.github/.github/workflows/promote-branch.yaml@master
-    with:
-      branch: master
-    secrets: inherit
-    permissions:
-      contents: write
-      id-token: write
+    name: Promote to master
+    runs-on: ubuntu-latest
+    if: success()
+
+    environment:
+      name: master-branch
+      url: ${{github.server_url}}/${{github.repository}}/tree/master
+
+    steps:
+      - name: Checkout develop
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.PUSH_TOKEN }}
+          fetch-depth: 0
+
+      - name: Push
+        id: update-branch
+        run: |
+          echo "new_sha1=$(git rev-parse HEAD)" >> "${GITHUB_OUTPUT}"
+
+          git fetch origin master
+          git checkout master
+          echo "old_sha1=$(git rev-parse HEAD)" >> "${GITHUB_OUTPUT}"
+
+          git push origin ${{github.sha}}:master
