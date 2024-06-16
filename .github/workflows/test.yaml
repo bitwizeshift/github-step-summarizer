@@ -1,0 +1,122 @@
+# yaml-language-server: $schema=https://json.schemastore.org/github-workflow.json
+name: Test Workflow Context Format
+
+on:
+  push:
+
+  workflow_call:
+    inputs:
+      value:
+        type: string
+        required: true
+        description: The value to pass to the workflow
+
+permissions:
+  contents: read
+  id-token: write
+
+jobs:
+  base-1:
+    name: Base 1
+    runs-on: ubuntu-latest
+    outputs:
+      step: ${{ steps.step.outputs.value }}
+      step2: ${{ steps.step2.outputs.value }}
+      step3: ${{ steps.step3.outputs.value }}
+    steps:
+      - name: Step
+        id: step
+        run: echo "value=1" >> "${GITHUB_OUTPUT}"
+      - name: Step 2
+        id: step2
+        run: echo "value=2" >> "${GITHUB_OUTPUT}"
+      - name: Step 3
+        id: step3
+        run: echo "value=3" >> "${GITHUB_OUTPUT}"
+      - name: Create Artifacts
+        id: artifacts
+        env:
+          STEP_CONTEXT: ${{ toJson(steps) }}
+          INPUT_CONTEXT: ${{ toJson(inputs) }}
+          NEED_CONTEXT: ${{ toJson(needs) }}
+        run: |
+          mkdir -p "${{ runner.temp }}/contexts"
+          echo "${STEP_CONTEXT}" >> "${{ runner.temp }}/contexts/step.json"
+          echo "${INPUT_CONTEXT}" >> "${{ runner.temp }}/contexts/input.json"
+          echo "${NEED_CONTEXT}" >> "${{ runner.temp }}/contexts/need.json"
+      - name: Upload Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: contexts-base-1
+          path: ${{ runner.temp }}/contexts
+
+  base-2:
+    name: Base 2
+    runs-on: ubuntu-latest
+    outputs:
+      step: ${{ steps.step.outputs.value }}
+      step2: ${{ fromJson(steps.step2.outputs.value) }}
+      step3: ${{ fromJson(steps.step3.outputs.value) }}
+    steps:
+      - name: Step
+        id: step
+        run: echo "value=1" >> "${GITHUB_OUTPUT}"
+      - name: Step 2
+        id: step2
+        run: echo "value=2" >> "${GITHUB_OUTPUT}"
+      - name: Step 3
+        id: step3
+        run: echo "value=3" >> "${GITHUB_OUTPUT}"
+      - name: Create Artifacts
+        id: artifacts
+        env:
+          STEP_CONTEXT: ${{ toJson(steps) }}
+          INPUT_CONTEXT: ${{ toJson(inputs) }}
+          NEED_CONTEXT: ${{ toJson(needs) }}
+        run: |
+          mkdir -p "${{ runner.temp }}/contexts"
+          echo "${STEP_CONTEXT}" >> "${{ runner.temp }}/contexts/step.json"
+          echo "${INPUT_CONTEXT}" >> "${{ runner.temp }}/contexts/input.json"
+          echo "${NEED_CONTEXT}" >> "${{ runner.temp }}/contexts/need.json"
+      - name: Upload Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: contexts-base-2
+          path: ${{ runner.temp }}/contexts
+
+  dependent:
+    name: Dependent
+    runs-on: ubuntu-latest
+    needs:
+      - base-1
+      - base-2
+    outputs:
+      step: ${{ steps.step.outputs.value }}
+      step2: ${{ steps.step2.outputs.value }}
+      step3: ${{ steps.step3.outputs.value }}
+    steps:
+      - name: Step
+        id: step
+        run: echo "value=1" >> "${GITHUB_OUTPUT}"
+      - name: Step 2
+        id: step2
+        run: echo "value=2" >> "${GITHUB_OUTPUT}"
+      - name: Step 3
+        id: step3
+        run: echo "value=3" >> "${GITHUB_OUTPUT}"
+      - name: Create Artifacts
+        id: artifacts
+        env:
+          STEP_CONTEXT: ${{ toJson(steps) }}
+          INPUT_CONTEXT: ${{ toJson(inputs) }}
+          NEED_CONTEXT: ${{ toJson(needs) }}
+        run: |
+          mkdir -p "${{ runner.temp }}/contexts"
+          echo "${STEP_CONTEXT}" >> "${{ runner.temp }}/contexts/step.json"
+          echo "${INPUT_CONTEXT}" >> "${{ runner.temp }}/contexts/input.json"
+          echo "${NEED_CONTEXT}" >> "${{ runner.temp }}/contexts/need.json"
+      - name: Upload Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: contexts-dependent
+          path: ${{ runner.temp }}/contexts
